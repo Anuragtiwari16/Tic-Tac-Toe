@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Play the ultimate Tic Tac Toe Pro game with Cyberpunk Neon aesthetics, Smart AI (Minimax), sound effects, and local multiplayer." />
+    <meta name="theme-color" content="#060814" />
+    <title>Tic Tac Toe | Cyber Neon Edition</title>
+
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+    <!-- Background Ambience -->
+    <div class="backdrop-container" aria-hidden="true">
+        <div class="backdrop-image"></div>
+        <div class="backdrop-overlay"></div>
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <!-- App Wrapper -->
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="brand-wrapper">
+                <div class="brand-icon" aria-hidden="true">⚡</div>
+                <h1 class="brand-title">
+                    TIC TAC TOE
+                    <span class="brand-badge"></span>
+                </h1>
+            </div>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Dark/Light Mode (Press T)"
+                    aria-label="Toggle Theme">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <button id="sound-toggle" class="icon-btn active" title="Toggle Sound FX (Press M)"
+                    aria-label="Toggle Sound Effects">
+                    <span id="sound-icon">🔊</span>
+                </button>
+                <button id="history-btn" class="icon-btn" title="Match History" aria-label="View Match History">
+                    <span>📜</span>
+                </button>
+                <button id="reset-scores-btn" class="icon-btn" title="Reset Scores" aria-label="Reset Scoreboard">
+                    <span>🔄</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Game Mode Selector -->
+        <nav class="mode-selector-wrap" aria-label="Game Modes">
+            <button id="mode-pvp" class="mode-btn active" data-mode="pvp">
+                <span>👥</span> 2 Player
+            </button>
+            <button id="mode-ai-easy" class="mode-btn" data-mode="ai-easy">
+                <span>🌱</span> AI Easy
+            </button>
+            <button id="mode-ai-medium" class="mode-btn" data-mode="ai-medium">
+                <span>⚔️</span> AI Medium
+            </button>
+            <button id="mode-ai-hard" class="mode-btn" data-mode="ai-hard">
+                <span>🧠</span> AI God
+            </button>
+        </nav>
+
+        <!-- Scoreboard HUD -->
+        <section class="scoreboard-hud glass-panel" aria-label="Scoreboard">
+            <div id="card-player-x" class="player-card player-x active-turn">
+                <div class="player-mark">✕</div>
+                <span class="player-label" id="label-player-x">PLAYER 1</span>
+                <span class="player-score" id="score-x">0</span>
+            </div>
+
+            <div class="vs-divider">
+                <div class="tie-card">
+                    <span class="tie-label">DRAWS</span>
+                    <span class="tie-score" id="score-ties">0</span>
+                </div>
+                <div class="streak-pill" id="streak-pill" title="Current Winning Streak">
+                    <span>🔥</span> <span id="streak-count">0</span> STREAK
+                </div>
+            </div>
+
+            <div id="card-player-o" class="player-card player-o">
+                <div class="player-mark">○</div>
+                <span class="player-label" id="label-player-o">PLAYER 2</span>
+                <span class="player-score" id="score-o">0</span>
+            </div>
+        </section>
+
+        <!-- Status Banner -->
+        <div class="status-container">
+            <div class="game-status-badge" id="status-badge" role="status" aria-live="polite">
+                <span class="status-indicator-dot" id="status-dot"></span>
+                <span id="status-text">Player X's Turn</span>
+            </div>
+        </div>
+
+        <!-- Board Arena -->
+        <main class="board-arena">
+            <div class="board-grid-wrapper">
+                <!-- Animated SVG strike-through line -->
+                <svg id="strike-svg" aria-hidden="true">
+                    <line id="strike-line" x1="0" y1="0" x2="0" y2="0" stroke="#00f2fe" stroke-width="6" />
+                </svg>
+
+                <!-- 3x3 Tic Tac Toe Grid -->
+                <div class="tic-tac-toe-grid" id="game-grid" role="grid" aria-label="Tic Tac Toe Board">
+                    <button class="grid-cell" id="cell-0" data-index="0" aria-label="Row 1, Column 1"></button>
+                    <button class="grid-cell" id="cell-1" data-index="1" aria-label="Row 1, Column 2"></button>
+                    <button class="grid-cell" id="cell-2" data-index="2" aria-label="Row 1, Column 3"></button>
+                    <button class="grid-cell" id="cell-3" data-index="3" aria-label="Row 2, Column 1"></button>
+                    <button class="grid-cell" id="cell-4" data-index="4" aria-label="Row 2, Column 2"></button>
+                    <button class="grid-cell" id="cell-5" data-index="5" aria-label="Row 2, Column 3"></button>
+                    <button class="grid-cell" id="cell-6" data-index="6" aria-label="Row 3, Column 1"></button>
+                    <button class="grid-cell" id="cell-7" data-index="7" aria-label="Row 3, Column 2"></button>
+                    <button class="grid-cell" id="cell-8" data-index="8" aria-label="Row 3, Column 3"></button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Action Controls -->
+        <section class="action-controls-bar">
+            <button id="undo-btn" class="btn-secondary" title="Undo Last Move (Press U)" disabled>
+                <span>↩️</span> Undo
+            </button>
+            <button id="new-game-btn" class="btn-primary" title="Start a fresh round (Press R)">
+                <span>✨</span> New Round
+            </button>
+        </section>
+
+        <!-- Footer Shortcuts -->
+        <footer class="footer-info">
+            <span class="key-hint">Keys: <kbd>1-9</kbd> Grid &bull; <kbd>R</kbd> Restart &bull; <kbd>U</kbd> Undo &bull;
+                <kbd>T</kbd> Theme &bull; <kbd>M</kbd> Mute</span>
+            <button id="open-history-link" class="history-toggle">Recent Games</button>
+        </footer>
+
+    </div>
+
+    <!-- Match History Modal -->
+    <div class="modal-overlay" id="history-modal" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="history-title">🏆 Match History</h2>
+                <button id="close-modal-btn" class="icon-btn" aria-label="Close modal">✕</button>
+            </div>
+            <div class="modal-body" id="history-list">
+                <p style="color: var(--text-dim); text-align: center; padding: 1.5rem;">No games recorded yet. Play a
+                    round!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
